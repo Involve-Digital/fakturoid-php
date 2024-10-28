@@ -46,7 +46,7 @@ class AuthProviderTest extends TestCase
         $credentials = $this->createMock(Credentials::class);
 
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials->method('getAccessToken')
             ->willReturn('access_token');
         $credentials->method('getRefreshToken')
@@ -84,7 +84,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getAccessToken')
@@ -123,7 +123,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getAccessToken')
@@ -167,7 +167,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getAccessToken')
@@ -203,7 +203,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getAccessToken')
@@ -247,11 +247,11 @@ class AuthProviderTest extends TestCase
 
         /** @var CredentialCallback $credentialCallback */
         $authProvider->setCredentialsCallback($credentialCallback);
-        $credentials = $authProvider->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
+        $credentials = $authProvider->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
         $this->assertInstanceOf(Credentials::class, $credentials);
         $this->assertEquals('access_token', $credentials->getAccessToken());
         $this->assertEquals(null, $credentials->getRefreshToken());
-        $this->assertEquals(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW, $credentials->getAuthType());
+        $this->assertEquals(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW(), $credentials->getAuthType());
     }
 
     public function testClientCredentialWithEmptyResponse(): void
@@ -270,7 +270,7 @@ class AuthProviderTest extends TestCase
 
         $this->expectException(AuthorizationFailedException::class);
         $this->expectExceptionMessage('An error occurred while client_credentials flow. Message: invalid response');
-        $authProvider->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
+        $authProvider->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
     }
 
     public function testAuthorizationCodeWithoutCode(): void
@@ -280,7 +280,7 @@ class AuthProviderTest extends TestCase
 
         $this->expectException(AuthorizationFailedException::class);
         $this->expectExceptionMessage('Load authentication screen first.');
-        $authProvider->auth(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+        $authProvider->auth(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
     }
 
     public function testRevoke(): void
@@ -301,7 +301,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getRefreshToken')
@@ -330,7 +330,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getRefreshToken')
@@ -360,7 +360,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $credentials
             ->expects($this->once())
             ->method('getRefreshToken')
@@ -379,7 +379,7 @@ class AuthProviderTest extends TestCase
 
         $credentials = $this->createMock(Credentials::class);
         $credentials->method('getAuthType')
-            ->willReturn(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
+            ->willReturn(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
         $authProvider = new AuthProvider('clientId', 'clientSecret', null, $client);
 
         $authProvider->setCredentials($credentials);
@@ -426,7 +426,7 @@ class AuthProviderTest extends TestCase
         $this->assertInstanceOf(Credentials::class, $credentials);
         $this->assertEquals('access_token', $credentials->getAccessToken());
         $this->assertEquals('refresh_token', $credentials->getRefreshToken());
-        $this->assertEquals(AuthTypeEnum::AUTHORIZATION_CODE_FLOW, $credentials->getAuthType());
+        $this->assertEquals(AuthTypeEnum::AUTHORIZATION_CODE_FLOW(), $credentials->getAuthType());
     }
 
     public function testAuthorizationInvalidResponse(): void
@@ -491,10 +491,10 @@ class AuthProviderTest extends TestCase
             ->method('__invoke');
         $authProvider->setCredentialsCallback($credentialCallback);
 
-        $credentials = $authProvider->auth(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
+        $credentials = $authProvider->auth(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
         $this->assertInstanceOf(Credentials::class, $credentials);
         $this->assertEquals('access_token', $credentials->getAccessToken());
         $this->assertEquals('refresh_token', $credentials->getRefreshToken());
-        $this->assertEquals(AuthTypeEnum::AUTHORIZATION_CODE_FLOW, $credentials->getAuthType());
+        $this->assertEquals(AuthTypeEnum::AUTHORIZATION_CODE_FLOW(), $credentials->getAuthType());
     }
 }

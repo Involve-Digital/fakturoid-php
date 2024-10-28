@@ -9,14 +9,13 @@ use Throwable;
 
 class RequestException extends Exception implements RequestExceptionInterface
 {
-
     /** @var RequestInterface */
     private $request;
 
     /** @var ResponseInterface */
     private $response;
 
-    /** @var Throwable */
+    /** @var Throwable|null */
     private $previous;
 
     public function __construct(

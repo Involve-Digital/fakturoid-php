@@ -116,6 +116,7 @@ class Dispatcher implements DispatcherInterface
                 ],
                 $body
             );
+
             $response = $this->client->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
             throw new ConnectionFailedException($e->getMessage(), $e->getCode(), $e);

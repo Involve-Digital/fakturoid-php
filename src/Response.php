@@ -8,7 +8,6 @@ use RectorPrefix20220323\Tracy\Debugger;
 
 class Response
 {
-
     /** @var int */
     private $statusCode;
 
@@ -21,17 +20,14 @@ class Response
     public function __construct(ResponseInterface $response)
     {
         $headers = [];
-
-        $headersArray = $response->getHeaders();
-        file_put_contents(__DIR__ . '/ResponseTest.log', print_r($headersArray, true), FILE_APPEND);
-
+        $headersArray = $response->getHeaders() ?? [];
+        $responseBody = $response->getBody();
         foreach ($headersArray as $headerName => $value) {
             $headers[$headerName] = $response->getHeaderLine($headerName);
         }
-        $statusCode = $response->getStatusCode();
-        $this->statusCode = is_array($statusCode) ? (int)$statusCode[0] : (int)$statusCode;
+        $this->statusCode = $response->getStatusCode();
         $this->headers = $headers;
-        $this->body = $response->getBody()->getContents();
+        $this->body = isset($responseBody) ? $responseBody->getContents() : '';
     }
 
     public function getStatusCode(): int

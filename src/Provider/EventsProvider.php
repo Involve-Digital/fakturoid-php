@@ -7,12 +7,11 @@ use Fakturoid\Response;
 
 final class EventsProvider extends Provider
 {
-
     /** @var DispatcherInterface */
     private $dispatcher;
 
     public function __construct(
-        $dispatcher
+        DispatcherInterface $dispatcher
     ) {
         $this->dispatcher = $dispatcher;
     }

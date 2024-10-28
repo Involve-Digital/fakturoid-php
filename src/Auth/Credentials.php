@@ -3,10 +3,13 @@
 namespace Fakturoid\Auth;
 
 use DateTimeImmutable;
+use Fakturoid\Enum\AuthTypeEnum;
 use Fakturoid\Exception\InvalidDataException;
 
 class Credentials
 {
+    public const DATE_FORMAT_ATOM = 'Y-m-d\TH:i:sP';
+
     /** @var string|null */
     private $refreshToken;
 
@@ -16,14 +19,14 @@ class Credentials
     /** @var DateTimeImmutable */
     private $expireAt;
 
-    /** @var string */
+    /** @var AuthTypeEnum */
     private $authType;
 
     public function __construct(
         ?string $refreshToken,
         ?string $accessToken,
         DateTimeImmutable $expireAt,
-        string $authType
+        AuthTypeEnum $authType
     ) {
         $this->refreshToken = $refreshToken;
         $this->accessToken = $accessToken;
@@ -46,12 +49,12 @@ class Credentials
         return (new DateTimeImmutable()) > $this->expireAt;
     }
 
-    public function getAuthType(): string
+    public function getAuthType(): AuthTypeEnum
     {
         return $this->authType;
     }
 
-    public function setAuthType(string $type): void
+    public function setAuthType(AuthTypeEnum $type): void
     {
         $this->authType = $type;
     }
@@ -69,8 +72,8 @@ class Credentials
         $json = json_encode([
             'refreshToken' => $this->refreshToken,
             'accessToken' => $this->accessToken,
-            'expireAt' => $this->expireAt->format('Y-m-d\TH:i:sP'),
-            'authType' => $this->authType,
+            'expireAt' => $this->expireAt->format(self::DATE_FORMAT_ATOM),
+            'authType' => $this->authType->value,
         ]);
 
         if ($json === false) {

@@ -8,11 +8,7 @@ use Fakturoid\Enum\AuthTypeEnum;
 
 class CredentialTest extends TestCase
 {
-
     public const DATE_FORMAT_ATOM = 'Y-m-d\TH:i:sP';
-
-    /** @var AuthTypeEnum @inject */
-    private $authTypeEnum;
 
     public function testCredentials(): void
     {
@@ -22,13 +18,13 @@ class CredentialTest extends TestCase
             'refresh_token',
             'access_token',
             $dateTime,
-            $this->authTypeEnum->fromValue(AuthTypeEnum::AUTHORIZATION_CODE_FLOW)
+            AuthTypeEnum::AUTHORIZATION_CODE_FLOW()
         );
 
         $this->assertEquals('access_token', $credentials->getAccessToken());
         $this->assertEquals('refresh_token', $credentials->getRefreshToken());
         $this->assertEquals(
-            AuthTypeEnum::AUTHORIZATION_CODE_FLOW,
+            AuthTypeEnum::AUTHORIZATION_CODE_FLOW(),
             $credentials->getAuthType()
         );
 
@@ -42,9 +38,10 @@ class CredentialTest extends TestCase
             $credentials->toJson()
         );
 
-        $credentials->setAuthType(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
+        $credentials->setAuthType(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
+
         $this->assertEquals(
-            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW,
+            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW(),
             $credentials->getAuthType()
         );
     }
@@ -55,11 +52,13 @@ class CredentialTest extends TestCase
             'refresh_token',
             'access_token',
             new DateTimeImmutable(),
-            AuthTypeEnum::AUTHORIZATION_CODE_FLOW
+            AuthTypeEnum::AUTHORIZATION_CODE_FLOW()
         );
-        $credentials->setAuthType(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
+
+        $credentials->setAuthType(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
+
         $this->assertEquals(
-            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW,
+            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW(),
             $credentials->getAuthType()
         );
     }
@@ -71,7 +70,7 @@ class CredentialTest extends TestCase
             'refresh_token',
             'access_token',
             $expireAt,
-            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW
+            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW()
         );
         $this->assertFalse($credentials->isExpired());
 
@@ -80,7 +79,7 @@ class CredentialTest extends TestCase
             'refresh_token',
             'access_token',
             $expireAt,
-            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW
+            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW()
         );
 
         $this->assertTrue($credentials->isExpired());

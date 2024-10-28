@@ -7,7 +7,6 @@ use Fakturoid\Response;
 
 final class TodosProvider extends Provider
 {
-
     /** @var DispatcherInterface */
     private $dispatcher;
 

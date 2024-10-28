@@ -7,7 +7,6 @@ use Fakturoid\Response;
 
 final class ExpensesProvider extends Provider
 {
-
     /** @var DispatcherInterface */
     private $dispatcher;
 

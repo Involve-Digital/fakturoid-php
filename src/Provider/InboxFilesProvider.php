@@ -7,7 +7,6 @@ use Fakturoid\Response;
 
 final class InboxFilesProvider extends Provider
 {
-
     /** @var DispatcherInterface */
     private $dispatcher;
 

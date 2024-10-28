@@ -7,8 +7,7 @@ use Fakturoid\Response;
 
 final class WebhooksProvider extends Provider
 {
-
-    /** @param DispatcherInterface $dispatcher */
+    /** @var DispatcherInterface $dispatcher */
     private $dispatcher;
 
     public function __construct(DispatcherInterface $dispatcher)
