@@ -3,19 +3,32 @@
 namespace Fakturoid\Auth;
 
 use DateTimeImmutable;
-use DateTimeInterface;
-use Fakturoid\Enum\AuthTypeEnum;
 use Fakturoid\Exception\InvalidDataException;
-use JsonException;
 
 class Credentials
 {
+    /** @var string|null */
+    private $refreshToken;
+
+    /** @var string|null */
+    private $accessToken;
+
+    /** @var DateTimeImmutable */
+    private $expireAt;
+
+    /** @var string */
+    private $authType;
+
     public function __construct(
-        #[\SensitiveParameter] private readonly ?string $refreshToken,
-        #[\SensitiveParameter] private readonly ?string $accessToken,
-        private readonly DateTimeImmutable $expireAt,
-        private AuthTypeEnum $authType
+        ?string $refreshToken,
+        ?string $accessToken,
+        DateTimeImmutable $expireAt,
+        string $authType
     ) {
+        $this->refreshToken = $refreshToken;
+        $this->accessToken = $accessToken;
+        $this->expireAt = $expireAt;
+        $this->authType = $authType;
     }
 
     public function getRefreshToken(): ?string
@@ -33,12 +46,12 @@ class Credentials
         return (new DateTimeImmutable()) > $this->expireAt;
     }
 
-    public function getAuthType(): AuthTypeEnum
+    public function getAuthType(): string
     {
         return $this->authType;
     }
 
-    public function setAuthType(AuthTypeEnum $type): void
+    public function setAuthType(string $type): void
     {
         $this->authType = $type;
     }
@@ -53,16 +66,17 @@ class Credentials
      */
     public function toJson(): string
     {
-        try {
-            $json = json_encode([
-                'refreshToken' => $this->refreshToken,
-                'accessToken' => $this->accessToken,
-                'expireAt' => $this->expireAt->format(DateTimeInterface::ATOM),
-                'authType' => $this->authType,
-            ], JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            throw new InvalidDataException('Failed to encode credentials to JSON', $exception->getCode(), $exception);
+        $json = json_encode([
+            'refreshToken' => $this->refreshToken,
+            'accessToken' => $this->accessToken,
+            'expireAt' => $this->expireAt->format('Y-m-d\TH:i:sP'),
+            'authType' => $this->authType,
+        ]);
+
+        if ($json === false) {
+            throw new InvalidDataException('Failed to encode credentials to JSON: ' . json_last_error_msg());
         }
+
         return $json;
     }
 }

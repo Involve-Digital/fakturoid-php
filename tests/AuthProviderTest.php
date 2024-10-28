@@ -44,6 +44,7 @@ class AuthProviderTest extends TestCase
         $requester = $this->createMock(ClientInterface::class);
 
         $credentials = $this->createMock(Credentials::class);
+
         $credentials->method('getAuthType')
             ->willReturn(AuthTypeEnum::AUTHORIZATION_CODE_FLOW);
         $credentials->method('getAccessToken')
@@ -136,12 +137,17 @@ class AuthProviderTest extends TestCase
             ->method('isExpired')
             ->willReturn(true);
 
+        /** @var ClientInterface $client */
         $authProvider = new AuthProvider('clientId', 'clientSecret', null, $client);
 
         $credentialCallback = $this->createMock(CredentialCallback::class);
         $credentialCallback->expects($this->once())
             ->method('__invoke');
+
+        /** @var CredentialCallback $credentialCallback */
         $authProvider->setCredentialsCallback($credentialCallback);
+
+        /** @var Credentials $credentials */
         $authProvider->setCredentials($credentials);
         $authProvider->reAuth();
     }
@@ -211,6 +217,7 @@ class AuthProviderTest extends TestCase
             ->method('isExpired')
             ->willReturn(true);
 
+        /** @var ClientInterface $client */
         $authProvider = new AuthProvider('clientId', 'clientSecret', null, $client);
         $this->expectException(AuthorizationFailedException::class);
         $this->expectExceptionMessage('An error occurred while authorization_code flow. Message:');
@@ -230,11 +237,15 @@ class AuthProviderTest extends TestCase
         $client->expects($this->once())
             ->method('sendRequest')
             ->willReturn($responseInterface);
+
+        /** @var ClientInterface $client */
         $authProvider = new AuthProvider('clientId', 'clientSecret', null, $client);
 
         $credentialCallback = $this->createMock(CredentialCallback::class);
         $credentialCallback->expects($this->once())
             ->method('__invoke');
+
+        /** @var CredentialCallback $credentialCallback */
         $authProvider->setCredentialsCallback($credentialCallback);
         $credentials = $authProvider->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
         $this->assertInstanceOf(Credentials::class, $credentials);

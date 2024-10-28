@@ -30,9 +30,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         return new class ($content) implements StreamInterface
         {
-            public function __construct(
-                private readonly string $content
-            ) {
+            /**
+             * @var string
+             */
+            private $content;
+
+            public function __construct(string $content)
+            {
+                $this->content = $content;
             }
 
             public function __toString(): string
@@ -69,7 +74,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 return false;
             }
 
-            public function seek(int $offset, int $whence = SEEK_SET): void
+            public function seek($offset, $whence = SEEK_SET): void
             {
             }
 
@@ -82,7 +87,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 return false;
             }
 
-            public function write(string $string): int
+            public function write($string): int
             {
                 return 0;
             }
@@ -92,12 +97,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                 return true;
             }
 
-            public function read(int $length): string
+            public function read($length): string
             {
                 return '';
             }
 
-            public function getMetadata(?string $key = null)
+            public function getMetadata($key = null)
             {
             }
 

@@ -10,21 +10,36 @@ use Fakturoid\Exception\Exception;
 use Fakturoid\Exception\InvalidDataException;
 use Fakturoid\Exception\RequestException;
 use Fakturoid\Exception\ServerErrorException;
-use JsonException;
 use Nyholm\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 
 class Dispatcher implements DispatcherInterface
 {
-    final public const BASE_URL = 'https://app.fakturoid.cz/api/v3';
+    public const BASE_URL = 'https://app.fakturoid.cz/api/v3';
+
+    /** @var string */
+    private $userAgent;
+
+    /** @var AuthProvider */
+    private $authorization;
+
+    /** @var ClientInterface */
+    private $client;
+
+    /** @var string|null */
+    private $accountSlug;
 
     public function __construct(
-        private readonly string $userAgent,
-        private readonly AuthProvider $authorization,
-        private readonly ClientInterface $client,
-        private ?string $accountSlug = null
+        string $userAgent,
+        AuthProvider $authorization,
+        ClientInterface $client,
+        ?string $accountSlug = null
     ) {
+        $this->userAgent = $userAgent;
+        $this->authorization = $authorization;
+        $this->client = $client;
+        $this->accountSlug = $accountSlug;
     }
 
     public function setAccountSlug(string $accountSlug): void
@@ -63,23 +78,24 @@ class Dispatcher implements DispatcherInterface
 
     /**
      * @param array{'method': string, 'params'?: array<string, mixed>, 'data'?: array<string, mixed>} $options
-     * @throws ConnectionFailedException|InvalidDataException|AuthorizationFailedException|RequestException
+     * @throws ConnectionFailedException|InvalidDataException|AuthorizationFailedException|RequestException|Exception
      */
     private function dispatch(string $path, array $options): Response
     {
-        if (str_contains($path, '{accountSlug}') && $this->accountSlug === null) {
+        if (strpos($path, '{accountSlug}') !== false && $this->accountSlug === null) {
             throw new Exception('Account slug is not set. You must set it before calling this method.');
         }
+
         $this->authorization->reAuth();
         if ($this->authorization->getCredentials() === null) {
             throw new AuthorizationFailedException('Credentials are null');
         }
         $body = null;
         if (!empty($options['data'])) {
-            try {
-                $body = json_encode($options['data'], JSON_THROW_ON_ERROR);
-            } catch (JsonException $exception) {
-                throw new InvalidDataException('Failed to encode data to JSON', $exception->getCode(), $exception);
+            $body = json_encode($options['data']);
+
+            if ($body === false) {
+                throw new InvalidDataException('Failed to encode data to JSON');
             }
         }
 

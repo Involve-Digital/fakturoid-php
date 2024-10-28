@@ -3,23 +3,33 @@
 namespace Fakturoid;
 
 use Fakturoid\Exception\InvalidResponseException;
-use JsonException;
 use Psr\Http\Message\ResponseInterface;
+use RectorPrefix20220323\Tracy\Debugger;
 
 class Response
 {
-    private readonly int $statusCode;
+
+    /** @var int */
+    private $statusCode;
+
     /** @var array<string, mixed> */
-    private readonly array $headers;
-    private readonly string $body;
+    private $headers;
+
+    /** @var string */
+    private $body;
 
     public function __construct(ResponseInterface $response)
     {
         $headers = [];
-        foreach ($response->getHeaders() as $headerName => $value) {
+
+        $headersArray = $response->getHeaders();
+        file_put_contents(__DIR__ . '/ResponseTest.log', print_r($headersArray, true), FILE_APPEND);
+
+        foreach ($headersArray as $headerName => $value) {
             $headers[$headerName] = $response->getHeaderLine($headerName);
         }
-        $this->statusCode = $response->getStatusCode();
+        $statusCode = $response->getStatusCode();
+        $this->statusCode = is_array($statusCode) ? (int)$statusCode[0] : (int)$statusCode;
         $this->headers = $headers;
         $this->body = $response->getBody()->getContents();
     }
@@ -63,12 +73,13 @@ class Response
         }
 
         try {
-            $json = json_decode($this->body, $returnJsonAsArray, 512, JSON_THROW_ON_ERROR);
+            $json = json_decode($this->body, $returnJsonAsArray, 512);
+
             if ($json === false) {
                 throw new InvalidResponseException('Invalid JSON response');
             }
             return $json;
-        } catch (JsonException $exception) {
+        } catch (InvalidResponseException $exception) {
             throw new InvalidResponseException('Invalid JSON response', $exception->getCode(), $exception);
         }
     }
@@ -76,6 +87,7 @@ class Response
     private function isJson(): bool
     {
         $contentType = $this->getHeader('Content-Type');
-        return $contentType !== null && str_contains($contentType, 'application/json');
+
+        return $contentType !== null && strpos($contentType, 'application/json') !== false;
     }
 }

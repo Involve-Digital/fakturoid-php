@@ -26,23 +26,56 @@ use Psr\Http\Client\ClientInterface;
 
 class FakturoidManager
 {
-    private readonly AuthProvider $authProvider;
-    private readonly Dispatcher $dispatcher;
-    private readonly AccountProvider $accountProvider;
-    private readonly BankAccountsProvider $bankAccountsProvider;
-    private readonly EventsProvider $eventsProvider;
-    private readonly ExpensesProvider $expensesProvider;
-    private readonly GeneratorsProvider $generatorsProvider;
-    private readonly InboxFilesProvider $inboxFilesProvider;
-    private readonly InventoryItemsProvider $inventoryItemsProvider;
-    private readonly InventoryMovesProvider $inventoryMovesProvider;
-    private readonly InvoicesProvider $invoicesProvider;
-    private readonly NumberFormatsProvider $numberFormatsProvider;
-    private readonly RecurringGeneratorsProvider $recurringGeneratorsProvider;
-    private readonly SubjectsProvider $subjectsProvider;
-    private readonly TodosProvider $todosProvider;
-    private readonly UsersProvider $usersProvider;
-    private readonly WebhooksProvider $webhooksProvider;
+    /** @var AuthProvider */
+    private $authProvider;
+
+    /** @var Dispatcher */
+    private $dispatcher;
+
+    /** @var AccountProvider */
+    private $accountProvider;
+
+    /** @var BankAccountsProvider */
+    private $bankAccountsProvider;
+
+    /** @var EventsProvider */
+    private $eventsProvider;
+
+    /** @var ExpensesProvider */
+    private $expensesProvider;
+
+    /** @var GeneratorsProvider */
+    private $generatorsProvider;
+
+    /** @var InboxFilesProvider */
+    private $inboxFilesProvider;
+
+    /** @var InventoryItemsProvider */
+    private $inventoryItemsProvider;
+
+    /** @var InventoryMovesProvider  */
+    private $inventoryMovesProvider;
+
+    /** @var InvoicesProvider */
+    private $invoicesProvider;
+
+    /** @var NumberFormatsProvider */
+    private $numberFormatsProvider;
+
+    /** @var RecurringGeneratorsProvider */
+    private $recurringGeneratorsProvider;
+
+    /** @var SubjectsProvider */
+    private $subjectsProvider;
+
+    /** @var TodosProvider */
+    private $todosProvider;
+
+    /** @var UsersProvider */
+    private $usersProvider;
+
+    /** @var WebhooksProvider */
+    private $webhooksProvider;
 
     public function __construct(
         ClientInterface $client,

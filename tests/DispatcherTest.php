@@ -5,11 +5,8 @@ namespace Fakturoid\Tests;
 use Fakturoid\Auth\AuthProvider;
 use Fakturoid\Auth\Credentials;
 use Fakturoid\Dispatcher;
-use Fakturoid\Exception\ClientErrorException;
 use Fakturoid\Exception\Exception;
-use Fakturoid\Exception\ServerErrorException;
 use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class DispatcherTest extends TestCase
 {
@@ -19,9 +16,15 @@ class DispatcherTest extends TestCase
 
         $authProvider = $this->createMock(AuthProvider::class);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client);
+
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Account slug is not set. You must set it before calling this method.');
+
         $dispatcher->patch('/accounts/{accountSlug}/invoices/1.json', ['name' => 'Test']);
     }
 
@@ -31,6 +34,9 @@ class DispatcherTest extends TestCase
 
         $authProvider = $this->createMock(AuthProvider::class);
         $credentials = $this->createMock(Credentials::class);
+
+        file_put_contents(__DIR__ . '/credentials.log', print_r($credentials, true), FILE_APPEND);
+
         $credentials->expects($this->once())
             ->method('getAccessToken')
             ->willReturn('test');
@@ -38,6 +44,10 @@ class DispatcherTest extends TestCase
             ->method('getCredentials')
             ->willReturn($credentials);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client, 'test');
         $dispatcher->patch('/accounts/{accountSlug}/invoices/1.json', ['name' => 'Test']);
     }
@@ -48,6 +58,7 @@ class DispatcherTest extends TestCase
 
         $authProvider = $this->createMock(AuthProvider::class);
         $credentials = $this->createMock(Credentials::class);
+
         $credentials->expects($this->once())
             ->method('getAccessToken')
             ->willReturn('test');
@@ -55,7 +66,12 @@ class DispatcherTest extends TestCase
             ->method('getCredentials')
             ->willReturn($credentials);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client);
+
         $dispatcher->patch('/accounts/invoices/1.json', ['name' => 'Test']);
     }
 
@@ -72,7 +88,12 @@ class DispatcherTest extends TestCase
             ->method('getCredentials')
             ->willReturn($credentials);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client, 'test');
+
         $dispatcher->patch('/accounts/invoices/1.json', ['name' => 'Test']);
     }
 
@@ -89,7 +110,12 @@ class DispatcherTest extends TestCase
             ->method('getCredentials')
             ->willReturn($credentials);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client, 'test');
+file_put_contents(__DIR__ . '/ResponseTest.log', print_r($dispatcher, true), FILE_APPEND);
         $dispatcher->get('/accounts/invoices/1.json', ['name' => 'Test']);
     }
 
@@ -97,6 +123,7 @@ class DispatcherTest extends TestCase
     {
         $client = $this->createMock(ClientInterface::class);
 
+        file_put_contents(__DIR__ . '/client.log', print_r($client, true), FILE_APPEND);
         $authProvider = $this->createMock(AuthProvider::class);
         $credentials = $this->createMock(Credentials::class);
         $credentials->expects($this->once())
@@ -106,7 +133,12 @@ class DispatcherTest extends TestCase
             ->method('getCredentials')
             ->willReturn($credentials);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client, 'test');
+
         $dispatcher->delete('/accounts/invoices/1.json');
     }
 
@@ -123,7 +155,12 @@ class DispatcherTest extends TestCase
             ->method('getCredentials')
             ->willReturn($credentials);
 
+        /**
+         * @var AuthProvider $authProvider
+         * @var ClientInterface $client
+         */
         $dispatcher = new Dispatcher('test', $authProvider, $client, 'test');
+
         $dispatcher->post('/accounts/invoices/1.json', ['name' => 'Test']);
     }
 }

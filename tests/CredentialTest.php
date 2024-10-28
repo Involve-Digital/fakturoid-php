@@ -3,31 +3,39 @@
 namespace Fakturoid\Tests;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use Fakturoid\Auth\Credentials;
 use Fakturoid\Enum\AuthTypeEnum;
 
 class CredentialTest extends TestCase
 {
+
+    public const DATE_FORMAT_ATOM = 'Y-m-d\TH:i:sP';
+
+    /** @var AuthTypeEnum @inject */
+    private $authTypeEnum;
+
     public function testCredentials(): void
     {
-        $dateTime = DateTimeImmutable::createFromFormat(DateTimeInterface::ATOM, '2021-01-01T00:00:00+00:00');
+        $dateTime = DateTimeImmutable::createFromFormat(self::DATE_FORMAT_ATOM, '2021-01-01T00:00:00+00:00');
         $this->assertNotFalse($dateTime);
         $credentials = new Credentials(
             'refresh_token',
             'access_token',
             $dateTime,
-            AuthTypeEnum::AUTHORIZATION_CODE_FLOW
+            $this->authTypeEnum->fromValue(AuthTypeEnum::AUTHORIZATION_CODE_FLOW)
         );
 
         $this->assertEquals('access_token', $credentials->getAccessToken());
         $this->assertEquals('refresh_token', $credentials->getRefreshToken());
-        $this->assertEquals(AuthTypeEnum::AUTHORIZATION_CODE_FLOW->value, $credentials->getAuthType()->value);
+        $this->assertEquals(
+            AuthTypeEnum::AUTHORIZATION_CODE_FLOW,
+            $credentials->getAuthType()
+        );
 
         $this->assertTrue($credentials->isExpired());
         $this->assertEquals(
-            $dateTime->format(DateTimeInterface::ATOM),
-            $credentials->getExpireAt()->format(DateTimeInterface::ATOM)
+            $dateTime->format(self::DATE_FORMAT_ATOM),
+            $credentials->getExpireAt()->format(self::DATE_FORMAT_ATOM)
         );
         $this->assertEquals(
             '{"refreshToken":"refresh_token","accessToken":"access_token","expireAt":"2021-01-01T00:00:00+00:00","authType":"authorization_code"}', //@phpcs:ignore Generic.Files.LineLength
@@ -35,7 +43,10 @@ class CredentialTest extends TestCase
         );
 
         $credentials->setAuthType(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
-        $this->assertEquals(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW->value, $credentials->getAuthType()->value);
+        $this->assertEquals(
+            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW,
+            $credentials->getAuthType()
+        );
     }
 
     public function testSwitchAuthType(): void
@@ -47,7 +58,10 @@ class CredentialTest extends TestCase
             AuthTypeEnum::AUTHORIZATION_CODE_FLOW
         );
         $credentials->setAuthType(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW);
-        $this->assertEquals(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW->value, $credentials->getAuthType()->value);
+        $this->assertEquals(
+            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW,
+            $credentials->getAuthType()
+        );
     }
 
     public function testExpiration(): void

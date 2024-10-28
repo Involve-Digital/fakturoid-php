@@ -7,9 +7,13 @@ use Fakturoid\Response;
 
 final class InvoicesProvider extends Provider
 {
-    public function __construct(
-        private readonly DispatcherInterface $dispatcher
-    ) {
+
+    /** @var DispatcherInterface */
+    private $dispatcher;
+
+    public function __construct(DispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
     }
 
     /**
