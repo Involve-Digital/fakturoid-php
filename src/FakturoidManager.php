@@ -85,7 +85,7 @@ class FakturoidManager
         ?string $accountSlug = null,
         ?string $redirectUri = null
     ) {
-        $this->authProvider = new AuthProvider($clientId, $clientSecret, $redirectUri, $client);
+        $this->authProvider = new AuthProvider($userAgent, $clientId, $clientSecret, $redirectUri, $client);
         $this->dispatcher = new Dispatcher($userAgent, $this->authProvider, $client, $accountSlug);
 
         $this->accountProvider = new AccountProvider($this->dispatcher);
