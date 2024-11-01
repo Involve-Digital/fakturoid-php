@@ -39,6 +39,11 @@ class Dispatcher implements DispatcherInterface
         $this->userAgent = $userAgent;
         $this->authorization = $authorization;
         $this->client = $client;
+
+        if (!$accountSlug) {
+            $accountSlug = $userAgent;
+        }
+
         $this->accountSlug = $accountSlug;
     }
 

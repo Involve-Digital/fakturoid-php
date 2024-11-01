@@ -51,7 +51,7 @@ The recommended way to install is through Composer:
 composer require fakturoid/fakturoid-php
 ```
 
-Library requires PHP 8.1 (or later) and `ext-json`, `nyholm/psr7` and `psr/http-client` extensions.
+Library requires PHP 7.1 (or later) and `ext-json`, `nyholm/psr7` and `psr/http-client` extensions.
 
 ## Authorization by OAuth 2.0
 
