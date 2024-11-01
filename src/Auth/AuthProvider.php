@@ -27,6 +27,9 @@ class AuthProvider
     private $credentials = null;
 
     /** @var string */
+    private $userAgent;
+
+    /** @var string */
     private $clientId;
 
     /** @var string */
@@ -39,11 +42,13 @@ class AuthProvider
     private $client;
 
     public function __construct(
+        string $userAgent,
         string $clientId,
         string $clientSecret,
         ?string $redirectUri,
         ClientInterface $client
     ) {
+        $this->userAgent = $userAgent;
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->redirectUri = $redirectUri;
@@ -301,6 +306,7 @@ class AuthProvider
                 sprintf('%s/oauth/token', Dispatcher::BASE_URL),
                 [
                     'Accept' => 'application/json',
+                    'User-Agent' => $this->userAgent,
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Basic ' . base64_encode(sprintf('%s:%s', $this->clientId, $this->clientSecret))
                 ],
