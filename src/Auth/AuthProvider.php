@@ -62,18 +62,18 @@ class AuthProvider
         ?AuthTypeEnum $authType = null,
         Credentials $credentials = null
     ): ?Credentials {
-        $authType = $authType ?? AuthTypeEnum::AUTHORIZATION_CODE_FLOW();
+        $authType = $authType ?? AuthTypeEnum::getAuthorizationCodeFlowInstance();
         $this->credentials = $credentials;
 
         switch ($authType) {
-            case AuthTypeEnum::AUTHORIZATION_CODE_FLOW():
+            case AuthTypeEnum::getAuthorizationCodeFlowInstance():
                 return $this->authorizationCode();
 
-            case AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW():
+            case AuthTypeEnum::getClientCredentialsCodeInstance():
                 return $this->clientCredentials();
+            default:
+                return null;
         }
-
-        return null;
     }
 
     /**
@@ -110,14 +110,14 @@ class AuthProvider
         }
         $this->checkResponseWithAccessToken(
             $json,
-            AuthTypeEnum::AUTHORIZATION_CODE_FLOW()
+            AuthTypeEnum::getAuthorizationCodeFlowInstance()
         );
         /** @var array{'refresh_token': string, 'access_token': string, 'expires_in': int} $json */
         $this->credentials = new Credentials(
             $json['refresh_token'],
             $json['access_token'],
             (new DateTimeImmutable())->modify('+ ' . ($json['expires_in'] - 10) . ' seconds'),
-            AuthTypeEnum::AUTHORIZATION_CODE_FLOW()
+            AuthTypeEnum::getAuthorizationCodeFlowInstance()
         );
         $this->callCredentialsCallback();
 
@@ -169,7 +169,7 @@ class AuthProvider
                 );
             }
 
-            $authType = AuthTypeEnum::AUTHORIZATION_CODE_FLOW();
+            $authType = AuthTypeEnum::getAuthorizationCodeFlowInstance();
             $this->checkResponseWithAccessToken($json, $authType);
             /** @var array{'access_token': string, 'token_type': string, 'expires_in': int} $json */
             $this->credentials = new Credentials(
@@ -197,7 +197,7 @@ class AuthProvider
             throw new AuthorizationFailedException('Load authentication screen first.');
         }
 
-        if ($this->credentials->getAuthType()->value !== AuthTypeEnum::AUTHORIZATION_CODE_FLOW()->value) {
+        if ($this->credentials->getAuthType()->value !== AuthTypeEnum::getAuthorizationCodeFlowInstance()->value) {
             throw new AuthorizationFailedException('Revoke is only available for authorization code flow');
         }
         $json = json_encode(['token' => $this->credentials->getRefreshToken()]);
@@ -239,7 +239,7 @@ class AuthProvider
         if (
             $credentials === null
             || empty($credentials->getAccessToken())
-            || (empty($credentials->getRefreshToken()) && $credentials->getAuthType()->value === AuthTypeEnum::AUTHORIZATION_CODE_FLOW()->value)
+            || (empty($credentials->getRefreshToken()) && $credentials->getAuthType()->value === AuthTypeEnum::getAuthorizationCodeFlowInstance()->value)
         ) {
             throw new AuthorizationFailedException('Invalid credentials');
         }
@@ -248,11 +248,11 @@ class AuthProvider
         }
 
         switch ($credentials->getAuthType()) {
-            case AuthTypeEnum::AUTHORIZATION_CODE_FLOW():
+            case AuthTypeEnum::getAuthorizationCodeFlowInstance():
                 return $this->oauth2Refresh();
 
-            case AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW():
-                return $this->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
+            case AuthTypeEnum::getClientCredentialsCodeInstance():
+                return $this->auth(AuthTypeEnum::getClientCredentialsCodeInstance());
             default:
                 return null; // Handle unsupported auth types
         }
@@ -280,13 +280,13 @@ class AuthProvider
                 $exception
             );
         }
-        $this->checkResponseWithAccessToken($json, AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
+        $this->checkResponseWithAccessToken($json, AuthTypeEnum::getClientCredentialsCodeInstance());
         /** @var array{'refresh_token'?: string|null, 'access_token': string, 'expires_in': int} $json */
         $this->credentials = new Credentials(
             $json['refresh_token'] ?? null,
             $json['access_token'],
             (new DateTimeImmutable())->modify('+ ' . ($json['expires_in'] - 10) . ' seconds'),
-            AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW()
+            AuthTypeEnum::getClientCredentialsCodeInstance()
         );
         $this->callCredentialsCallback();
 
@@ -300,6 +300,10 @@ class AuthProvider
      */
     private function makeRequest(array $body): array
     {
+        if ($jsonBody = json_encode($body)) {
+            throw new InvalidDataException('Failed to encode credentials to JSON: ' . json_last_error_msg());
+        }
+
         try {
             $request = new Request(
                 'POST',
@@ -310,7 +314,7 @@ class AuthProvider
                     'Content-Type' => 'application/json',
                     'Authorization' => 'Basic ' . base64_encode(sprintf('%s:%s', $this->clientId, $this->clientSecret))
                 ],
-                (string) json_encode($body)
+                (string) $jsonBody
             );
             $response = $this->client->sendRequest($request);
         } catch (ClientExceptionInterface $exception) {
@@ -382,6 +386,6 @@ class AuthProvider
     public function requestCredentials(string $code): void
     {
         $this->loadCode($code);
-        $this->auth(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
+        $this->auth(AuthTypeEnum::getAuthorizationCodeFlowInstance());
     }
 }

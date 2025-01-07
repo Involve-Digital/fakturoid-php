@@ -6,9 +6,12 @@ use TypeError;
 
 class AuthTypeEnum
 {
-    private const ENUM = [
-        'AUTHORIZATION_CODE_FLOW' => 'authorization_code',
-        'CLIENT_CREDENTIALS_CODE_FLOW' => 'client_credentials'
+    public const AUTHORIZATION_CODE_FLOW = 'authorization_code';
+    public const CLIENT_CREDENTIALS_CODE_FLOW = 'client_credentials';
+
+    public const CASES = [
+        self::AUTHORIZATION_CODE_FLOW,
+        self::CLIENT_CREDENTIALS_CODE_FLOW
     ];
 
     /** @var string */
@@ -23,7 +26,7 @@ class AuthTypeEnum
     {
         $this->value = $value;
 
-        if (!in_array($value, self::ENUM, true)) {
+        if (!in_array($value, self::CASES, true)) {
             throw new TypeError("Invalid enum value: $value");
         }
     }
@@ -42,13 +45,13 @@ class AuthTypeEnum
         }
     }
 
-    public static function AUTHORIZATION_CODE_FLOW(): self
+    public static function getAuthorizationCodeFlowInstance(): self
     {
-        return new self(self::ENUM['AUTHORIZATION_CODE_FLOW']);
+        return new self(self::AUTHORIZATION_CODE_FLOW);
     }
 
-    public static function CLIENT_CREDENTIALS_CODE_FLOW(): self
+    public static function getClientCredentialsCodeInstance(): self
     {
-        return new self(self::ENUM['CLIENT_CREDENTIALS_CODE_FLOW']);
+        return new self(self::CLIENT_CREDENTIALS_CODE_FLOW);
     }
 }

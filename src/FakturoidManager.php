@@ -126,7 +126,7 @@ class FakturoidManager
     public function requestCredentials(string $code): void
     {
         $this->authProvider->loadCode($code);
-        $this->authProvider->auth(AuthTypeEnum::AUTHORIZATION_CODE_FLOW());
+        $this->authProvider->auth(AuthTypeEnum::getAuthorizationCodeFlowInstance());
     }
 
     public function getCredentials(): ?Credentials
@@ -149,7 +149,7 @@ class FakturoidManager
      */
     public function authClientCredentials(): void
     {
-        $this->authProvider->auth(AuthTypeEnum::CLIENT_CREDENTIALS_CODE_FLOW());
+        $this->authProvider->auth(AuthTypeEnum::getClientCredentialsCodeInstance());
     }
 
     public function getDispatcher(): Dispatcher
