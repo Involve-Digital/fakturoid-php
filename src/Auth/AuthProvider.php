@@ -300,7 +300,7 @@ class AuthProvider
      */
     private function makeRequest(array $body): array
     {
-        if ($jsonBody = json_encode($body)) {
+        if (!$jsonBody = json_encode($body)) {
             throw new InvalidDataException('Failed to encode credentials to JSON: ' . json_last_error_msg());
         }
 
